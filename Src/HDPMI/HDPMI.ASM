@@ -2084,14 +2084,24 @@ lpms_call_exc endp
 
 	@ResetTrace
 
-lpms_call_host_exc proc
-
 LCEFR0 struct
 r	 	IRET32 <>
 dwExc	dd ?
 f	  	R0FAULT32 <>
 LCEFR0 ends
 
+if ?EXCRESTART
+LCEFR0X struct
+dwExc	dd ?
+f	  	R3FAULT32 <>	;6 DWORDS
+dwHST	dd ?
+rES		dd ?
+rDS		dd ?
+f0	  	R0FAULT32 <>
+LCEFR0X ends
+endif
+
+lpms_call_host_exc proc
 
 ;--- exception in ring 0, eax+ebp saved on stack
 
@@ -2150,15 +2160,6 @@ if ?IGNEXC01INR0
 endif
         
 if ?EXCRESTART
-
-LCEFR0X struct
-dwExc	dd ?
-f	  	R3FAULT32 <>	;6 DWORDS
-dwHST	dd ?
-rES		dd ?
-rDS		dd ?
-f0	  	R0FAULT32 <>
-LCEFR0X ends
 
 	bt ss:[wExcHdlr],ax
 	jnc nodpmi10handlerX
